@@ -11,9 +11,12 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 
+
+set tags=./tags;,tags
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " cscope setting
- 
+
 if has("cscope")
 	set csprg=/usr/bin/cscope              "指定用来执行 cscope 的命令
 	set csto=1                             "先搜索tags标签文件，再搜索cscope数据库
@@ -21,8 +24,17 @@ if has("cscope")
 	set nocsverb                           "不显示添加数据库是否成功
 	" add any database in current directory
 	if filereadable("cscope.out")
-		cs add cscope.out                   "添加cscope数据库
+		cs add cscope.out
+		"else search cscope.out elsewhere
+	else
+		let cscope_file=findfile("cscope.out", ".;")
+		let cscope_pre=matchstr(cscope_file, ".*/")
+		if !empty(cscope_file) && filereadable(cscope_file)
+			exe "cs add" cscope_file cscope_pre
+		endif
 	endif
+
+
 	set csverb                             "显示添加成功与否
 endif
 
@@ -44,7 +56,7 @@ Plugin 'scrooloose/nerdtree'
 
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-let NERDTreeWinSize=25
+let NERDTreeWinSize=30
 let NERDTreeShowLineNumbers=1
 let NERDTreeAutoCenter=1
 let NERDTreeShowBookmarks=1
